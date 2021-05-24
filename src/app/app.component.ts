@@ -22,7 +22,7 @@ export class AppComponent {
   offsetY: number;
   offsetX: number;
   boxes = [];
-  size = 10000;
+  size = 5000;
 
   ngOnInit() {
     for (let i = 0; i < this.size; i++) {
