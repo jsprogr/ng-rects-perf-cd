@@ -6,20 +6,18 @@ import { Component, OnInit, Input } from "@angular/core";
     <div
       [ngStyle]="{
         position: 'absolute',
-        left: x + 'px',
-        top: y + 'px',
+        left: box.x + 'px',
+        top: box.y + 'px',
         'background-color': color
       }"
-      [attr.data-my-id]="num"
+      [attr.data-my-id]="box.num"
       [class.selected]="selected"
     ></div>
   `,
   styleUrls: ["./box.component.scss"],
 })
 export class BoxComponent implements OnInit {
-  @Input() public x: number;
-  @Input() public y: number;
-  @Input() public num: number;
+  @Input() public box: any;
   @Input() public selected: boolean;
 
   color: string;

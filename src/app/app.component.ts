@@ -10,9 +10,7 @@ import { Component } from "@angular/core";
     >
       <app-box
         *ngFor="let box of boxes"
-        [x]="box.x"
-        [y]="box.y"
-        [num]="box.num"
+        [box]="box"
         [selected]="box.num == currentId"
       ></app-box>
     </div>
@@ -58,8 +56,6 @@ export class AppComponent {
   }
 
   updateBox(id: number, x: number, y: number) {
-    let box = this.boxes[id];
-    box.x = x;
-    box.y = y;
+    this.boxes[id] = { x, y, num: id };
   }
 }
