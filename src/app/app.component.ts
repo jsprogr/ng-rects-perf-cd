@@ -1,4 +1,5 @@
-import { Component } from "@angular/core";
+import { ChangeDetectorRef, Component } from "@angular/core";
+import { BoxComponent } from "./box/box.component";
 
 @Component({
   selector: "app-root",
@@ -10,7 +11,9 @@ import { Component } from "@angular/core";
     >
       <app-box
         *ngFor="let box of boxes"
-        [box]="box"
+        [x]="box.x"
+        [y]="box.y"
+        [num]="box.num"
         [selected]="box.num == currentId"
       ></app-box>
     </div>
@@ -18,11 +21,13 @@ import { Component } from "@angular/core";
   styleUrls: ["./app.component.scss"],
 })
 export class AppComponent {
-  currentId: number = null;
+  currentBox: BoxComponent = null;
   offsetY: number;
   offsetX: number;
   boxes = [];
   size = 5000;
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     for (let i = 0; i < this.size; i++) {
@@ -32,11 +37,15 @@ export class AppComponent {
     }
   }
 
+  ngAfterViewInit() {
+    this.cdr.detach();
+  }
+
   onMouseMove(event) {
     event.preventDefault();
-    if (this.currentId !== null) {
+    if (this.currentBox !== null) {
       this.updateBox(
-        this.currentId,
+        this.currentBox,
         event.clientX + this.offsetX,
         event.clientY + this.offsetY
       );
@@ -44,18 +53,28 @@ export class AppComponent {
   }
 
   onMouseUp(event) {
-    this.currentId = null;
+    if (this.currentBox) {
+      this.currentBox.selected = false;
+      this.currentBox.update();
+    }
+    this.currentBox = null;
   }
 
   onMouseDown(event) {
-    const id = Number(event.target.getAttribute("data-my-id"));
-    const box = this.boxes[id];
+    const box = <BoxComponent>event.target["BoxComponent"];
+
     this.offsetX = box.x - event.clientX;
     this.offsetY = box.y - event.clientY;
-    this.currentId = id;
+
+    this.currentBox = box;
+
+    box.selected = true;
+    box.update();
   }
 
-  updateBox(id: number, x: number, y: number) {
-    this.boxes[id] = { x, y, num: id };
+  updateBox(box: BoxComponent, x: number, y: number) {
+    box.x = x;
+    box.y = y;
+    box.update();
   }
 }

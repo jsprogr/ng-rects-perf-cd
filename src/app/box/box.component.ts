@@ -1,35 +1,52 @@
-import { Component, OnInit, Input, ChangeDetectionStrategy } from "@angular/core";
+import { Component, OnInit, Input, ChangeDetectorRef, ViewChild, ElementRef } from "@angular/core";
 
 @Component({
   selector: "app-box",
   template: `
     <div
+      #div
       [ngStyle]="{
         position: 'absolute',
-        left: box.x + 'px',
-        top: box.y + 'px',
+        left: x + 'px',
+        top: y + 'px',
         'background-color': color
       }"
-      [attr.data-my-id]="box.num"
+      [attr.data-my-id]="num"
       [class.selected]="selected"
     ></div>
   `,
   styleUrls: ["./box.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BoxComponent implements OnInit {
-  @Input() public box: any;
+  @Input() public x: number;
+  @Input() public y: number;
+  @Input() public num: number;
   @Input() public selected: boolean;
+
+  @ViewChild("div", {static: false})
+  set div(value: ElementRef) {
+    if (value) {
+      value.nativeElement["BoxComponent"] = this;
+    }
+  }
 
   color: string;
 
-  constructor() {}
+  constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.color = `rgba(${this.getRandValue()},${this.getRandValue()},${this.getRandValue()}, 0.5)`;
   }
 
+  ngAfterViewInit() {
+    this.cdr.detach();
+  }
+
   getRandValue() {
     return Math.floor(Math.random() * 255 + 1);
+  }
+
+  update() {
+    this.cdr.detectChanges();
   }
 }
